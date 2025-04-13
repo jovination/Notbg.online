@@ -7,19 +7,35 @@ import {
   PenTool, 
   Award 
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface FeatureCardProps {
   icon: React.ReactNode;
   title: string;
   description: string;
+  index: number;
 }
 
-const FeatureCard = ({ icon, title, description }: FeatureCardProps) => (
-  <div className="bg-white p-6 rounded-[32px] shadow-sm hover:shadow-md transition-shadow">
-    <div className="text-primary mb-4">{icon}</div>
+const FeatureCard = ({ icon, title, description, index }: FeatureCardProps) => (
+  <motion.div 
+    className="bg-white p-6 rounded-[32px] shadow-sm hover:shadow-md transition-shadow"
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay: index * 0.1 }}
+    viewport={{ once: true, margin: "-50px" }}
+    whileHover={{ y: -5 }}
+  >
+    <motion.div 
+      className="text-primary mb-4"
+      initial={{ scale: 0.8 }}
+      whileInView={{ scale: 1 }}
+      transition={{ duration: 0.3, delay: index * 0.1 + 0.2 }}
+    >
+      {icon}
+    </motion.div>
     <h3 className="text-lg font-semibold mb-2">{title}</h3>
     <p className="text-gray-600">{description}</p>
-  </div>
+  </motion.div>
 );
 
 const FeaturesSection = () => {
@@ -59,14 +75,20 @@ const FeaturesSection = () => {
   return (
     <section id="features" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
           <h2 className="text-3xl font-bold mb-4">
             Remove backgrounds 100% automatically
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Our AI-powered tool makes background removal simple, fast, and incredibly accurate
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
@@ -75,6 +97,7 @@ const FeaturesSection = () => {
               icon={feature.icon}
               title={feature.title}
               description={feature.description}
+              index={index}
             />
           ))}
         </div>
