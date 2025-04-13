@@ -1,5 +1,5 @@
 
-import { Camera, Clock, MagicWand, Download, PenTool, Award } from "lucide-react";
+import { Camera, Clock, Wand2, Download, PenTool, Award } from "lucide-react";
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -18,7 +18,7 @@ const FeatureCard = ({ icon, title, description }: FeatureCardProps) => (
 const FeaturesSection = () => {
   const features = [
     {
-      icon: <MagicWand className="h-8 w-8" />,
+      icon: <Wand2 className="h-8 w-8" />,
       title: "Automatic Processing",
       description: "Our AI detects the subject and removes background with no manual selection needed."
     },
