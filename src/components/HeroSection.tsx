@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 
 const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden py-20 yellow-gradient-bg">
+    <section className="relative overflow-hidden py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row gap-12 items-center">
           {/* Content */}
@@ -17,10 +17,10 @@ const HeroSection = () => {
               Get rid of backgrounds 100% automatically in 5 seconds with one click
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button size="lg" className="gap-2">
+              <Button size="lg" className="gap-2 bg-primary text-black hover:bg-primary/90">
                 Start Now <ArrowRight className="h-4 w-4" />
               </Button>
-              <Button size="lg" variant="outline">
+              <Button size="lg" variant="outline" className="border-gray-300 hover:bg-gray-50">
                 Learn More
               </Button>
             </div>
@@ -28,19 +28,13 @@ const HeroSection = () => {
 
           {/* Image */}
           <div className="lg:w-1/2 relative">
-            <div className="relative z-10 rounded-lg shadow-xl overflow-hidden">
+            <div className="relative z-10 rounded-lg shadow-md overflow-hidden">
               <img
-                src="/lovable-uploads/245aecfb-aed6-407e-9d3e-746f55c48d8f.png"
+                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
                 alt="Background removal example"
                 className="w-full h-auto"
               />
             </div>
-            
-            {/* Decorative Elements */}
-            <div className="squiggle -top-4 -left-8 text-2xl">✨</div>
-            <div className="squiggle top-1/4 -right-8 text-3xl">🌟</div>
-            <div className="squiggle bottom-1/4 -left-10 text-3xl">〰️</div>
-            <div className="squiggle -bottom-6 right-1/4 text-3xl">✨</div>
           </div>
         </div>
       </div>

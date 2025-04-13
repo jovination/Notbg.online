@@ -1,5 +1,12 @@
 
-import { Camera, Clock, Wand2, Download, PenTool, Award } from "lucide-react";
+import { 
+  Camera, 
+  Clock, 
+  Wand2, 
+  Download, 
+  PenTool, 
+  Award 
+} from "lucide-react";
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -8,7 +15,7 @@ interface FeatureCardProps {
 }
 
 const FeatureCard = ({ icon, title, description }: FeatureCardProps) => (
-  <div className="benefit-card">
+  <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
     <div className="text-primary mb-4">{icon}</div>
     <h3 className="text-lg font-semibold mb-2">{title}</h3>
     <p className="text-gray-600">{description}</p>
@@ -50,7 +57,7 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <section id="features" className="py-16 px-4 sm:px-6 lg:px-8">
+    <section id="features" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">
@@ -61,7 +68,7 @@ const FeaturesSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <FeatureCard
               key={index}
