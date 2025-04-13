@@ -12,7 +12,7 @@ interface TestimonialProps {
 
 const Testimonial = ({ content, author, position, avatar, index }: TestimonialProps) => (
   <motion.div 
-    className="testimonial-card"
+    className="bg-white p-6 rounded-[32px] shadow-md flex flex-col gap-4"
     initial={{ opacity: 0, y: 30 }}
     whileInView={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -71,7 +71,7 @@ const TestimonialSection = () => {
   ];
 
   return (
-    <section id="testimonials" className="py-16 px-4 sm:px-6 lg:px-8 yellow-section">
+    <section id="testimonials" className="py-16 px-4 sm:px-6 lg:px-8 bg-primary">
       <div className="max-w-7xl mx-auto">
         <motion.div 
           className="text-center mb-12"

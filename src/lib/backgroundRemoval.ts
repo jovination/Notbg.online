@@ -1,4 +1,3 @@
-
 import { pipeline, env } from '@huggingface/transformers';
 
 // Configure transformers.js to download models
@@ -39,10 +38,11 @@ function resizeImageIfNeeded(
 export const removeBackground = async (imageElement: HTMLImageElement): Promise<Blob> => {
   try {
     console.log('Starting background removal process...');
+    
+    // Try to use a more accurate model for better results
     const segmenter = await pipeline(
       'image-segmentation', 
-      'Xenova/segformer-b0-finetuned-ade-512-512'
-      // Removed the unsupported 'quantized' property
+      'Xenova/segformer-b2-finetuned-ade-512-512'
     );
     
     // Convert HTMLImageElement to canvas
@@ -56,12 +56,15 @@ export const removeBackground = async (imageElement: HTMLImageElement): Promise<
     console.log(`Image ${wasResized ? 'was' : 'was not'} resized. Final dimensions: ${canvas.width}x${canvas.height}`);
     
     // Get image data as base64
-    const imageData = canvas.toDataURL('image/jpeg', 0.8);
+    const imageData = canvas.toDataURL('image/jpeg', 0.9); // Increased quality
     console.log('Image converted to base64');
     
     // Process the image with the segmentation model
     console.log('Processing with segmentation model...');
-    const result = await segmenter(imageData);
+    const result = await segmenter(imageData, { 
+      threshold: 0.5, // Adjust threshold for better segmentation
+      topk: 1 // Focus on the main subject
+    });
     
     console.log('Segmentation result:', result);
     
@@ -88,11 +91,21 @@ export const removeBackground = async (imageElement: HTMLImageElement): Promise<
     );
     const data = outputImageData.data;
     
-    // Apply inverted mask to alpha channel
+    // Apply inverted mask to alpha channel with improved edge detection
     for (let i = 0; i < result[0].mask.data.length; i++) {
+      // Use a smoother transition for edges to reduce jagged edges
       // Invert the mask value (1 - value) to keep the subject instead of the background
-      const alpha = Math.round((1 - result[0].mask.data[i]) * 255);
-      data[i * 4 + 3] = alpha;
+      const maskValue = result[0].mask.data[i];
+      // Apply a slightly different formula for edges (values between 0.3 and 0.7)
+      if (maskValue > 0.3 && maskValue < 0.7) {
+        // Smoother transition for edges
+        const alpha = Math.round((1 - maskValue) * 255);
+        data[i * 4 + 3] = alpha;
+      } else {
+        // Binary mask for clearly foreground/background areas
+        const alpha = maskValue < 0.5 ? 255 : 0;
+        data[i * 4 + 3] = alpha;
+      }
     }
     
     outputCtx.putImageData(outputImageData, 0, 0);

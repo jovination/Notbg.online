@@ -26,7 +26,7 @@ const FeatureCard = ({ icon, title, description, index }: FeatureCardProps) => (
     whileHover={{ y: -5 }}
   >
     <motion.div 
-      className="text-primary mb-4"
+      className="text-blue-500 mb-4"
       initial={{ scale: 0.8 }}
       whileInView={{ scale: 1 }}
       transition={{ duration: 0.3, delay: index * 0.1 + 0.2 }}
@@ -101,6 +101,17 @@ const FeaturesSection = () => {
             />
           ))}
         </div>
+        
+        {/* Decorative elements */}
+        <motion.div 
+          className="absolute right-10 bottom-10 w-20 h-20 text-primary opacity-60 hidden lg:block"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        >
+          <svg viewBox="0 0 100 100" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth="3">
+            <path d="M20,50 Q40,70 60,50 Q80,30 100,50" />
+          </svg>
+        </motion.div>
       </div>
     </section>
   );

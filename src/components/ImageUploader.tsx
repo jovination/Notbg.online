@@ -66,9 +66,9 @@ const ImageUploader = () => {
             clearInterval(progressInterval);
             return 90;
           }
-          return prev + 10;
+          return prev + 5;
         });
-      }, 300);
+      }, 200);
       
       // Load the image
       const img = await loadImage(file);
@@ -153,7 +153,7 @@ const ImageUploader = () => {
                 animate={{ y: [0, -10, 0] }}
                 transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
               >
-                <Upload className="h-12 w-12 text-gray-400 mb-4" />
+                <Upload className="h-12 w-12 text-blue-500 mb-4" />
               </motion.div>
               <p className="text-lg font-medium mb-2">Drag and drop your image here</p>
               <p className="text-gray-500 mb-4">or click to browse files</p>
@@ -161,7 +161,7 @@ const ImageUploader = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button className="rounded-full">Upload Image</Button>
+                <Button className="rounded-full bg-blue-500 hover:bg-blue-600 text-white">Upload Image</Button>
               </motion.div>
               <input
                 type="file"
@@ -188,7 +188,7 @@ const ImageUploader = () => {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <Card className="flex-1 max-w-sm rounded-[32px] overflow-hidden">
+                <Card className="flex-1 max-w-sm rounded-[32px] overflow-hidden shadow-md">
                   <CardContent className="p-4">
                     <div className="text-center mb-4">
                       <h3 className="font-semibold">Original Image</h3>
@@ -215,7 +215,7 @@ const ImageUploader = () => {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                <Card className="flex-1 max-w-sm rounded-[32px] overflow-hidden">
+                <Card className="flex-1 max-w-sm rounded-[32px] overflow-hidden shadow-md">
                   <CardContent className="p-4">
                     <div className="text-center mb-4">
                       <h3 className="font-semibold">Processed Image</h3>
@@ -223,11 +223,11 @@ const ImageUploader = () => {
                     <div className="image-container aspect-square flex items-center justify-center bg-gray-100 bg-[url('/placeholder.svg')] rounded-[24px]">
                       {isProcessing ? (
                         <div className="flex flex-col items-center">
-                          <Loader2 className="h-10 w-10 text-primary animate-spin mb-2" />
+                          <Loader2 className="h-10 w-10 text-blue-500 animate-spin mb-2" />
                           <p className="text-gray-500">Processing... {progress}%</p>
                           <div className="w-48 h-2 bg-gray-200 rounded-full mt-2 overflow-hidden">
                             <motion.div 
-                              className="h-full bg-primary rounded-full"
+                              className="h-full bg-blue-500 rounded-full"
                               initial={{ width: 0 }}
                               animate={{ width: `${progress}%` }}
                               transition={{ duration: 0.3 }}
@@ -277,7 +277,7 @@ const ImageUploader = () => {
                 <Button
                   onClick={handleDownload}
                   disabled={!processedImage || isProcessing}
-                  className="rounded-full"
+                  className="rounded-full bg-blue-500 hover:bg-blue-600 text-white"
                 >
                   Download Result
                 </Button>
@@ -286,6 +286,23 @@ const ImageUploader = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* Decorative elements */}
+      <motion.div 
+        className="absolute left-10 top-1/2 w-16 h-16 text-primary opacity-60 hidden md:block"
+        animate={{ 
+          y: [0, 15, 0],
+          rotate: 360 
+        }}
+        transition={{ 
+          y: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+          rotate: { duration: 20, repeat: Infinity, ease: "linear" }
+        }}
+      >
+        <svg viewBox="0 0 100 100" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth="3">
+          <path d="M30,20 Q50,60 70,20" />
+        </svg>
+      </motion.div>
     </div>
   );
 };

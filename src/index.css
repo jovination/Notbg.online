@@ -83,7 +83,7 @@
 }
 
 .drop-zone.active {
-  @apply border-primary bg-accent;
+  @apply border-blue-500 bg-blue-50;
 }
 
 .yellow-gradient-bg {
@@ -99,7 +99,7 @@
 }
 
 .loader {
-  @apply animate-spin rounded-full h-8 w-8 border-4 border-t-transparent border-primary;
+  @apply animate-spin rounded-full h-8 w-8 border-4 border-t-transparent border-blue-500;
 }
 
 .benefit-card {
@@ -112,4 +112,18 @@
 
 .squiggle {
   @apply absolute text-primary opacity-80;
+}
+
+/* Decorative elements */
+.yellow-squiggle {
+  @apply absolute text-primary opacity-70;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.floating {
+  animation: float 3s ease-in-out infinite;
 }

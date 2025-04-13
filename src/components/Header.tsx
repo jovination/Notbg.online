@@ -19,10 +19,10 @@ const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
-          <a href="#features" className="text-gray-700 hover:text-primary font-medium">Features</a>
-          <a href="#examples" className="text-gray-700 hover:text-primary font-medium">Examples</a>
-          <a href="#testimonials" className="text-gray-700 hover:text-primary font-medium">Testimonials</a>
-          <Button className="ml-4">Get Started</Button>
+          <a href="#features" className="text-gray-700 hover:text-blue-500 font-medium">Features</a>
+          <a href="#examples" className="text-gray-700 hover:text-blue-500 font-medium">Examples</a>
+          <a href="#testimonials" className="text-gray-700 hover:text-blue-500 font-medium">Testimonials</a>
+          <Button className="ml-4 rounded-full bg-blue-500 hover:bg-blue-600 text-white">Get Started</Button>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -37,30 +37,33 @@ const Header = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-16 inset-x-0 z-50 bg-white shadow-lg p-4 animate-fade-in rounded-3xl">
+        <div className="md:hidden absolute top-16 inset-x-0 z-50 bg-white shadow-lg p-4 animate-fade-in rounded-3xl mx-4">
           <nav className="flex flex-col space-y-4">
             <a 
               href="#features" 
-              className="text-gray-700 hover:text-primary font-medium p-2" 
+              className="text-gray-700 hover:text-blue-500 font-medium p-2" 
               onClick={() => setIsMenuOpen(false)}
             >
               Features
             </a>
             <a 
               href="#examples" 
-              className="text-gray-700 hover:text-primary font-medium p-2" 
+              className="text-gray-700 hover:text-blue-500 font-medium p-2" 
               onClick={() => setIsMenuOpen(false)}
             >
               Examples
             </a>
             <a 
               href="#testimonials" 
-              className="text-gray-700 hover:text-primary font-medium p-2" 
+              className="text-gray-700 hover:text-blue-500 font-medium p-2" 
               onClick={() => setIsMenuOpen(false)}
             >
               Testimonials
             </a>
-            <Button className="w-full" onClick={() => setIsMenuOpen(false)}>
+            <Button 
+              className="w-full rounded-full bg-blue-500 hover:bg-blue-600 text-white"
+              onClick={() => setIsMenuOpen(false)}
+            >
               Get Started
             </Button>
           </nav>
