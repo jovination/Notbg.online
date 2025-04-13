@@ -85,7 +85,7 @@ const ImageUploader = () => {
     if (processedImage) {
       const a = document.createElement("a");
       a.href = processedImage;
-      a.download = "bg-removed-image.png";
+      a.download = "notbg-image.png";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -103,7 +103,7 @@ const ImageUploader = () => {
 
       {!originalImage ? (
         <div
-          className={`drop-zone ${isDragging ? "active" : ""}`}
+          className={`drop-zone rounded-[32px] ${isDragging ? "active" : ""}`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -113,7 +113,7 @@ const ImageUploader = () => {
             <Upload className="h-12 w-12 text-gray-400 mb-4" />
             <p className="text-lg font-medium mb-2">Drag and drop your image here</p>
             <p className="text-gray-500 mb-4">or click to browse files</p>
-            <Button>Upload Image</Button>
+            <Button className="rounded-full">Upload Image</Button>
             <input
               type="file"
               ref={fileInputRef}
@@ -127,12 +127,12 @@ const ImageUploader = () => {
         <div className="space-y-8">
           <div className="flex flex-col md:flex-row gap-8 justify-center">
             {/* Original Image */}
-            <Card className="flex-1 max-w-sm">
+            <Card className="flex-1 max-w-sm rounded-[32px]">
               <CardContent className="p-4">
                 <div className="text-center mb-4">
                   <h3 className="font-semibold">Original Image</h3>
                 </div>
-                <div className="image-container aspect-square flex items-center justify-center bg-gray-100">
+                <div className="image-container aspect-square flex items-center justify-center bg-gray-100 rounded-[24px]">
                   {originalImage && (
                     <img
                       src={originalImage}
@@ -145,12 +145,12 @@ const ImageUploader = () => {
             </Card>
 
             {/* Processed Image */}
-            <Card className="flex-1 max-w-sm">
+            <Card className="flex-1 max-w-sm rounded-[32px]">
               <CardContent className="p-4">
                 <div className="text-center mb-4">
                   <h3 className="font-semibold">Processed Image</h3>
                 </div>
-                <div className="image-container aspect-square flex items-center justify-center bg-gray-100 bg-[url('/placeholder.svg')]">
+                <div className="image-container aspect-square flex items-center justify-center bg-gray-100 bg-[url('/placeholder.svg')] rounded-[24px]">
                   {isProcessing ? (
                     <div className="loader"></div>
                   ) : processedImage ? (
@@ -177,12 +177,14 @@ const ImageUploader = () => {
                 setProcessedImage(null);
               }}
               variant="outline"
+              className="rounded-full"
             >
               Try Another Image
             </Button>
             <Button
               onClick={handleDownload}
               disabled={!processedImage || isProcessing}
+              className="rounded-full"
             >
               Download Result
             </Button>

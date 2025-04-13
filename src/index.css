@@ -33,7 +33,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 45 100% 51%;
 
-    --radius: 0.5rem;
+    --radius: 2rem;
   }
 
   .dark {
@@ -79,7 +79,7 @@
 }
 
 .drop-zone {
-  @apply border-2 border-dashed rounded-lg p-8 transition-all;
+  @apply border-2 border-dashed rounded-[32px] p-8 transition-all;
 }
 
 .drop-zone.active {
@@ -95,7 +95,7 @@
 }
 
 .image-container {
-  @apply relative overflow-hidden rounded-lg shadow-lg;
+  @apply relative overflow-hidden rounded-[24px] shadow-lg;
 }
 
 .loader {
@@ -103,11 +103,11 @@
 }
 
 .benefit-card {
-  @apply bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center transition-transform hover:scale-105;
+  @apply bg-white p-6 rounded-[32px] shadow-md flex flex-col items-center text-center transition-transform hover:scale-105;
 }
 
 .testimonial-card {
-  @apply bg-white p-6 rounded-lg shadow-md flex flex-col gap-4;
+  @apply bg-white p-6 rounded-[32px] shadow-md flex flex-col gap-4;
 }
 
 .squiggle {

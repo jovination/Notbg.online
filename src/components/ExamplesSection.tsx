@@ -6,25 +6,25 @@ import { Button } from "@/components/ui/button";
 const examples = [
   {
     before: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
-    after: "/lovable-uploads/245aecfb-aed6-407e-9d3e-746f55c48d8f.png", // Keeping the processed version
+    after: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158", // Same image as before (we'll explain in the UI)
     alt: "Woman with laptop",
     description: "Portrait photos"
   },
   {
     before: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
-    after: "/lovable-uploads/245aecfb-aed6-407e-9d3e-746f55c48d8f.png", // Keeping the processed version
+    after: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7", // Same image as before (we'll explain in the UI)
     alt: "Woman on bed",
     description: "Product photos"
   },
   {
     before: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-    after: "/lovable-uploads/245aecfb-aed6-407e-9d3e-746f55c48d8f.png", // Keeping the processed version
+    after: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b", // Same image as before (we'll explain in the UI)
     alt: "Laptop computer",
     description: "E-commerce"
   },
   {
     before: "https://images.unsplash.com/photo-1531297484001-80022131f5a1",
-    after: "/lovable-uploads/245aecfb-aed6-407e-9d3e-746f55c48d8f.png", // Keeping the processed version
+    after: "https://images.unsplash.com/photo-1531297484001-80022131f5a1", // Same image as before (we'll explain in the UI)
     alt: "Laptop on surface",
     description: "Design"
   },
@@ -69,9 +69,9 @@ const ExamplesSection = () => {
 
         <div className="relative max-w-4xl mx-auto">
           <div className="flex flex-col md:flex-row gap-6 items-center justify-center">
-            <div className="bg-[#f8f9fa] p-4 rounded-lg shadow-sm w-full md:w-1/2">
+            <div className="bg-[#f8f9fa] p-4 rounded-[32px] shadow-sm w-full md:w-1/2">
               <p className="text-center font-medium mb-2 text-gray-700">Original</p>
-              <div className="aspect-square relative overflow-hidden rounded-md bg-gray-100">
+              <div className="aspect-square relative overflow-hidden rounded-[24px] bg-gray-100">
                 <img
                   src={examples[currentExample].before}
                   alt={`Original ${examples[currentExample].alt}`}
@@ -80,14 +80,12 @@ const ExamplesSection = () => {
               </div>
             </div>
             
-            <div className="bg-[#f8f9fa] p-4 rounded-lg shadow-sm w-full md:w-1/2">
-              <p className="text-center font-medium mb-2 text-gray-700">Transparent background</p>
-              <div className="aspect-square relative overflow-hidden rounded-md bg-[url('/placeholder.svg')] bg-gray-100 bg-opacity-50 bg-contain">
-                <img
-                  src={examples[currentExample].after}
-                  alt={`Processed ${examples[currentExample].alt}`}
-                  className="object-contain w-full h-full"
-                />
+            <div className="bg-[#f8f9fa] p-4 rounded-[32px] shadow-sm w-full md:w-1/2">
+              <p className="text-center font-medium mb-2 text-gray-700">Upload your own image to see results</p>
+              <div className="aspect-square relative overflow-hidden rounded-[24px] bg-gray-100 flex items-center justify-center">
+                <p className="text-gray-400 text-center p-4">
+                  Background removal will be applied<br/>to your uploaded images
+                </p>
               </div>
             </div>
           </div>
@@ -97,7 +95,7 @@ const ExamplesSection = () => {
               variant="outline" 
               size="icon" 
               onClick={prevExample}
-              className="bg-white shadow-sm hover:bg-gray-50"
+              className="bg-white shadow-sm hover:bg-gray-50 rounded-full"
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
@@ -105,7 +103,7 @@ const ExamplesSection = () => {
               variant="outline" 
               size="icon" 
               onClick={nextExample}
-              className="bg-white shadow-sm hover:bg-gray-50"
+              className="bg-white shadow-sm hover:bg-gray-50 rounded-full"
             >
               <ChevronRight className="h-5 w-5" />
             </Button>

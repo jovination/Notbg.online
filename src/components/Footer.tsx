@@ -1,11 +1,11 @@
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
+    <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8 rounded-t-[32px]">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">BG-Be-Gone Studio</h3>
+            <h3 className="text-lg font-semibold">Notbg</h3>
             <p className="text-gray-400 text-sm">
               The easiest way to remove image backgrounds online. Powered by AI for professional results every time.
             </p>
@@ -44,7 +44,7 @@ const Footer = () => {
         
         <div className="border-t border-gray-800 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © {new Date().getFullYear()} BG-Be-Gone Studio. All rights reserved.
+            © {new Date().getFullYear()} Notbg. All rights reserved.
           </p>
           <div className="flex space-x-4 mt-4 md:mt-0">
             <a href="#" aria-label="Facebook" className="text-gray-400 hover:text-primary">

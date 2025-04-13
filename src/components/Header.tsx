@@ -14,7 +14,7 @@ const Header = () => {
     <header className="w-full py-4 px-4 sm:px-6 md:px-8 bg-white shadow-sm">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <div className="flex items-center">
-          <span className="font-bold text-xl">BG-Be-Gone Studio</span>
+          <span className="font-bold text-xl">Notbg</span>
         </div>
 
         {/* Desktop Navigation */}
@@ -37,7 +37,7 @@ const Header = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-16 inset-x-0 z-50 bg-white shadow-lg p-4 animate-fade-in">
+        <div className="md:hidden absolute top-16 inset-x-0 z-50 bg-white shadow-lg p-4 animate-fade-in rounded-3xl">
           <nav className="flex flex-col space-y-4">
             <a 
               href="#features" 
