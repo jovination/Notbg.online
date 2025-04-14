@@ -1,3 +1,4 @@
+
 import { pipeline, env } from '@huggingface/transformers';
 
 // Configure transformers.js to download models
@@ -39,7 +40,7 @@ export const removeBackground = async (imageElement: HTMLImageElement): Promise<
   try {
     console.log('Starting background removal process...');
     
-    // Try to use a more accurate model for better results
+    // Remove topk and adjust threshold options
     const segmenter = await pipeline(
       'image-segmentation', 
       'Xenova/segformer-b2-finetuned-ade-512-512'
@@ -62,8 +63,7 @@ export const removeBackground = async (imageElement: HTMLImageElement): Promise<
     // Process the image with the segmentation model
     console.log('Processing with segmentation model...');
     const result = await segmenter(imageData, { 
-      threshold: 0.5, // Adjust threshold for better segmentation
-      topk: 1 // Focus on the main subject
+      threshold: 0.5 // Removed topk, keep threshold for segmentation
     });
     
     console.log('Segmentation result:', result);
