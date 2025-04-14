@@ -20,14 +20,14 @@ const CTASection = () => {
           Ready to transform your images? Try our free background remover now and see the magic happen in seconds.
         </p>
         
-        <div className="relative bg-white rounded-3xl shadow-lg p-6 mx-auto max-w-sm">
+        <div className="relative bg-white rounded-[32px] shadow-lg p-6 mx-auto max-w-sm">
           <h3 className="text-lg font-medium mb-4">Remove Background</h3>
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             <Button size="lg" className="gap-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full w-full">
-              Upload Image <ArrowRight className="h-4 w-4" />
+              Start Now <ArrowRight className="h-4 w-4" />
             </Button>
           </motion.div>
           <p className="text-gray-500 text-sm text-center mt-4 mb-4">or drop image here</p>
@@ -41,7 +41,7 @@ const CTASection = () => {
         
         {/* Decorative elements */}
         <motion.div 
-          className="absolute right-0 top-1/2 w-12 h-12 text-yellow-400 opacity-60"
+          className="absolute right-0 top-1/2 w-12 h-12 text-primary opacity-60"
           animate={{ rotate: 360 }}
           transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
         >
