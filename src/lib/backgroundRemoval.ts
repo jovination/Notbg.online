@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { pipeline, env } from '@huggingface/transformers';
 
@@ -176,8 +177,7 @@ export const createSegmentationModel = async () => {
     'Xenova/segformer-b0-finetuned-ade-512-512', // Smaller, faster model
     { 
       device: 'webgpu', 
-      progress_callback: null, // Disable progress tracking for speed
-      quantized: true // Use quantized model for faster inference
+      progress_callback: null // Disable progress tracking for speed
     }
   );
 }

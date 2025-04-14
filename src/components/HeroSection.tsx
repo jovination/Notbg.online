@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 
 const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative overflow-hidden py-20 bg-white h-screen flex items-center justify-center">
+      <div className="max-w-7xl  w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row items-center">
           {/* Text Content */}
           <motion.div 
@@ -15,7 +15,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-6">
               Remove Image
               <span className="block text-primary">Background</span>
             </h1>
@@ -65,19 +65,30 @@ const HeroSection = () => {
                 </svg>
               </motion.div>
               
-              <div className="relative bg-white rounded-[32px] shadow-lg p-6 mx-auto max-w-sm">
-                <h3 className="text-lg font-medium mb-4">Remove Background</h3>
-                <div className="bg-blue-500 text-white rounded-full py-2 px-4 text-center mb-4">
-                  <span>Upload Image</span>
-                </div>
-                <p className="text-gray-500 text-sm text-center mb-4">or drop image here</p>
-                <div className="flex justify-center space-x-2 mt-4">
-                  <div className="w-8 h-8 rounded-md bg-gray-200"></div>
-                  <div className="w-8 h-8 rounded-md bg-gray-200"></div>
-                  <div className="w-8 h-8 rounded-md bg-gray-200"></div>
-                  <div className="w-8 h-8 rounded-md bg-gray-200"></div>
-                </div>
-              </div>
+ <div className="relative mt-10 max-w-[432px] w-[360px] md:w-full h-[346px] bg-white rounded-[32px] shadow-xl p-6 mx-auto flex flex-col items-center justify-center">
+  <div className="bg-blue-500 text-xl font-semibold text-white rounded-full py-3 px-5 text-center mb-4">
+    <span>Upload Image</span>
+  </div>
+  <p className="text-gray-500 text-base font-semibold text-center mb-4">or drop image here</p>
+  <div className="flex justify-center space-x-2 mt-4">
+    {[
+      "photo-1581091226825-a6a2a5aee158",
+      "photo-1649972904349-6e44c42644a7",
+      "photo-1488590528505-98d2b5aba04b",
+      "photo-1531297484001-80022131f5a1",
+    ].map((id, i) => (
+      <div key={i} className="w-8 h-8 rounded-md overflow-hidden">
+        <img
+          src={`https://images.unsplash.com/${id}?w=100&h=100&fit=crop`}
+          alt={`Sample ${i + 1}`}
+          className="w-full h-full object-cover"
+        />
+      </div>
+    ))}
+  </div>
+</div>
+
+
             </div>
           </motion.div>
         </div>
