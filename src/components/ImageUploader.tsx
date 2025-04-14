@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { loadImage, removeBackground } from "@/lib/backgroundRemoval";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
+import { Progress } from "@/components/ui/progress";
 
 const ImageUploader = () => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -12,6 +13,7 @@ const ImageUploader = () => {
   const [originalImage, setOriginalImage] = useState<string | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [processingStatus, setProcessingStatus] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -55,6 +57,7 @@ const ImageUploader = () => {
     try {
       setIsProcessing(true);
       setProgress(0);
+      setProcessingStatus('Loading image...');
       setOriginalImage(URL.createObjectURL(file));
       setProcessedImage(null);
       
@@ -64,26 +67,30 @@ const ImageUploader = () => {
             clearInterval(progressInterval);
             return 90;
           }
-          return prev + 5;
+          return prev + 10;
         });
-      }, 200);
+      }, 150);
       
+      setProcessingStatus('Loading image...');
       const img = await loadImage(file);
       
+      setProcessingStatus('Removing background...');
       const processedBlob = await removeBackground(img);
       const processedURL = URL.createObjectURL(processedBlob);
       
       clearInterval(progressInterval);
       setProgress(100);
+      setProcessingStatus('Finalizing...');
       
       setTimeout(() => {
         setProcessedImage(processedURL);
+        setProcessingStatus('');
         
         toast({
           title: "Success!",
           description: "Background removed successfully.",
         });
-      }, 500);
+      }, 300);
     } catch (error) {
       console.error("Error processing image:", error);
       toast({
@@ -95,7 +102,7 @@ const ImageUploader = () => {
       setTimeout(() => {
         setIsProcessing(false);
         setProgress(0);
-      }, 500);
+      }, 300);
     }
   };
 
@@ -220,14 +227,9 @@ const ImageUploader = () => {
                       {isProcessing ? (
                         <div className="flex flex-col items-center">
                           <Loader2 className="h-10 w-10 text-blue-500 animate-spin mb-2" />
-                          <p className="text-gray-500">Processing... {progress}%</p>
-                          <div className="w-48 h-2 bg-gray-200 rounded-full mt-2 overflow-hidden">
-                            <motion.div 
-                              className="h-full bg-blue-500 rounded-full"
-                              initial={{ width: 0 }}
-                              animate={{ width: `${progress}%` }}
-                              transition={{ duration: 0.3 }}
-                            />
+                          <p className="text-gray-500">{processingStatus} {progress}%</p>
+                          <div className="w-48 h-3 mt-2 overflow-hidden">
+                            <Progress value={progress} className="h-full" />
                           </div>
                         </div>
                       ) : processedImage ? (

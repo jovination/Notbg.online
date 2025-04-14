@@ -3,10 +3,10 @@ import { pipeline, env } from '@huggingface/transformers';
 
 // Configure transformers.js to download models
 env.allowLocalModels = false;
-env.useBrowserCache = false;
+env.useBrowserCache = true; // Enable browser caching to speed up subsequent loads
 
-const MAX_IMAGE_DIMENSION = 1024;
-const MIN_IMAGE_DIMENSION = 24; // New minimum dimension for downsizing
+const MAX_IMAGE_DIMENSION = 768; // Reduced from 1024 for faster processing
+const MIN_IMAGE_DIMENSION = 24; // Minimum dimension for downsizing
 
 /**
  * Resizes an image if it exceeds maximum dimensions or is below minimum dimensions
@@ -70,15 +70,15 @@ export const createCanvasFromImage = (image: HTMLImageElement): {
 }
 
 /**
- * Converts canvas to base64 data URL
+ * Converts canvas to base64 data URL with optimized quality
  */
-export const canvasToDataURL = (canvas: HTMLCanvasElement, quality = 0.9): string => {
+export const canvasToDataURL = (canvas: HTMLCanvasElement, quality = 0.75): string => {
+  // Using lower quality for faster processing
   return canvas.toDataURL('image/jpeg', quality);
 }
 
 /**
- * Applies a segmentation mask to an image to remove the background
- * Uses advanced edge detection for better object boundaries
+ * Fast implementation of mask application to remove background
  */
 export const applyMaskToImage = (
   canvas: HTMLCanvasElement,
@@ -105,53 +105,50 @@ export const applyMaskToImage = (
   );
   const data = outputImageData.data;
   
-  // Enhanced algorithm for better object detection and edge refinement
-  // We'll scan for object edges and apply a more gradual transition
-  
-  // First pass: Apply basic mask
+  // Optimized single-pass algorithm for faster processing
   for (let i = 0; i < mask.data.length; i++) {
     const maskValue = mask.data[i];
-    data[i * 4 + 3] = Math.round((1 - maskValue) * 255); // Invert mask
+    // Simple threshold for binary segmentation (faster)
+    const alpha = maskValue < 0.4 ? 255 : 0; // Sharper cutoff for better object definition
+    data[i * 4 + 3] = alpha;
   }
   
-  // Second pass: Improve edges with a 3x3 kernel
-  const tempData = new Uint8ClampedArray(data.length);
-  tempData.set(data);
-  
-  const width = outputCanvas.width;
-  const height = outputCanvas.height;
-  
-  // Edge enhancement kernel
-  for (let y = 1; y < height - 1; y++) {
-    for (let x = 1; x < width - 1; x++) {
-      const idx = (y * width + x) * 4;
-      
-      // Only process pixels near edges (where alpha is between 20 and 235)
-      if (data[idx + 3] > 20 && data[idx + 3] < 235) {
-        // Sample surrounding pixels
-        let sum = 0;
-        let count = 0;
+  // Only enhance edges for higher quality images to save processing time
+  if (canvas.width > 400 || canvas.height > 400) {
+    // Fast edge refinement
+    const tempData = new Uint8ClampedArray(data);
+    const width = outputCanvas.width;
+    const height = outputCanvas.height;
+    
+    // Only process edge pixels (where alpha changes)
+    for (let y = 1; y < height - 1; y++) {
+      for (let x = 1; x < width - 1; x++) {
+        const idx = (y * width + x) * 4 + 3; // Alpha channel
         
-        // Check 3x3 neighborhood
-        for (let ky = -1; ky <= 1; ky++) {
-          for (let kx = -1; kx <= 1; kx++) {
-            const kidx = ((y + ky) * width + (x + kx)) * 4;
-            sum += data[kidx + 3];
-            count++;
+        // Only process edge pixels (where alpha is either 0 or 255)
+        if (data[idx] === 0 || data[idx] === 255) {
+          // Check neighbors to see if we're at an edge
+          const left = data[((y) * width + (x-1)) * 4 + 3];
+          const right = data[((y) * width + (x+1)) * 4 + 3];
+          const top = data[((y-1) * width + (x)) * 4 + 3];
+          const bottom = data[((y+1) * width + (x)) * 4 + 3];
+          
+          // If this is an edge pixel, apply smoothing
+          if (left !== data[idx] || right !== data[idx] || top !== data[idx] || bottom !== data[idx]) {
+            // Simple smoothing operation
+            tempData[idx] = Math.round((left + right + top + bottom) / 4);
           }
         }
-        
-        // Calculate smoothed alpha value
-        const avgAlpha = Math.round(sum / count);
-        
-        // Apply refined alpha for smoother edges
-        tempData[idx + 3] = avgAlpha;
       }
+    }
+    
+    // Apply refined edges
+    for (let i = 0; i < data.length; i++) {
+      data[i] = tempData[i];
     }
   }
   
-  // Apply smoothed data
-  outputCtx.putImageData(new ImageData(tempData, width, height), 0, 0);
+  outputCtx.putImageData(outputImageData, 0, 0);
   
   // Convert canvas to blob
   return new Promise((resolve, reject) => {
@@ -164,56 +161,63 @@ export const applyMaskToImage = (
         }
       },
       'image/png',
-      1.0
+      0.95 // Slightly reduced quality for faster processing
     );
   });
 }
 
 /**
- * Creates and initializes a segmentation model with improved parameters
+ * Creates and initializes a faster segmentation model
  */
 export const createSegmentationModel = async () => {
-  // Use a more accurate model for better object detection
+  // Use a smaller, faster model for quicker processing
   return await pipeline(
     'image-segmentation', 
-    'Xenova/segformer-b2-finetuned-ade-512-512', 
-    { device: 'webgpu' } // Use WebGPU if available for faster processing
+    'Xenova/segformer-b0-finetuned-ade-512-512', // Smaller, faster model
+    { 
+      device: 'webgpu', 
+      progress_callback: null, // Disable progress tracking for speed
+      quantized: true // Use quantized model for faster inference
+    }
   );
 }
 
+// Cache the model to avoid reloading
+let cachedModel: any = null;
+
 /**
  * Main function to remove background from an image
- * Implements improved object detection logic
+ * Optimized for speed while maintaining accuracy
  */
 export const removeBackground = async (imageElement: HTMLImageElement): Promise<Blob> => {
   try {
-    console.log('Starting background removal process...');
+    console.log('Starting optimized background removal process...');
     
-    // Initialize segmentation model
-    const segmenter = await createSegmentationModel();
+    // Use cached model if available
+    if (!cachedModel) {
+      console.log('Initializing segmentation model...');
+      cachedModel = await createSegmentationModel();
+    }
     
-    // Create canvas from image
+    // Create canvas from image (with optimal size)
     const { canvas, wasResized } = createCanvasFromImage(imageElement);
     console.log(`Image ${wasResized ? 'was' : 'was not'} resized. Final dimensions: ${canvas.width}x${canvas.height}`);
     
-    // Get image data as base64
-    const imageData = canvasToDataURL(canvas, 0.92); // Higher quality for better object detection
-    console.log('Image converted to base64');
+    // Get image data as base64 with reduced quality for faster processing
+    const imageData = canvasToDataURL(canvas, 0.75);
     
     // Process the image with the segmentation model
-    console.log('Processing with segmentation model...');
-    const result = await segmenter(imageData, { 
-      threshold: 0.5 // Threshold for segmentation
+    console.log('Processing with fast segmentation model...');
+    const result = await cachedModel(imageData, { 
+      threshold: 0.4 // Lower threshold for faster processing
     });
-    
-    console.log('Segmentation result:', result);
     
     if (!result || !Array.isArray(result) || result.length === 0 || !result[0].mask) {
       throw new Error('Invalid segmentation result');
     }
     
     // Apply mask to remove background
-    console.log('Applying enhanced mask for better edge detection');
+    console.log('Applying optimized mask');
     return await applyMaskToImage(canvas, result[0].mask);
   } catch (error) {
     console.error('Error removing background:', error);
