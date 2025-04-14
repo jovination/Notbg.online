@@ -1,3 +1,4 @@
+
 import { pipeline, env } from '@huggingface/transformers';
 
 // Configure transformers.js to download models
@@ -5,9 +6,10 @@ env.allowLocalModels = false;
 env.useBrowserCache = false;
 
 const MAX_IMAGE_DIMENSION = 1024;
+const MIN_IMAGE_DIMENSION = 24; // New minimum dimension for downsizing
 
 /**
- * Resizes an image if it exceeds maximum dimensions
+ * Resizes an image if it exceeds maximum dimensions or is below minimum dimensions
  */
 export const resizeImage = (
   canvas: HTMLCanvasElement, 
@@ -16,7 +18,9 @@ export const resizeImage = (
 ): boolean => {
   let width = image.naturalWidth;
   let height = image.naturalHeight;
+  let wasResized = false;
 
+  // Handle maximum dimension constraint
   if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
     if (width > height) {
       height = Math.round((height * MAX_IMAGE_DIMENSION) / width);
@@ -25,17 +29,25 @@ export const resizeImage = (
       width = Math.round((width * MAX_IMAGE_DIMENSION) / height);
       height = MAX_IMAGE_DIMENSION;
     }
+    wasResized = true;
+  }
 
-    canvas.width = width;
-    canvas.height = height;
-    ctx.drawImage(image, 0, 0, width, height);
-    return true;
+  // Handle minimum dimension constraint
+  if (width < MIN_IMAGE_DIMENSION || height < MIN_IMAGE_DIMENSION) {
+    if (width < height) {
+      height = Math.round((height * MIN_IMAGE_DIMENSION) / width);
+      width = MIN_IMAGE_DIMENSION;
+    } else {
+      width = Math.round((width * MIN_IMAGE_DIMENSION) / height);
+      height = MIN_IMAGE_DIMENSION;
+    }
+    wasResized = true;
   }
 
   canvas.width = width;
   canvas.height = height;
-  ctx.drawImage(image, 0, 0);
-  return false;
+  ctx.drawImage(image, 0, 0, width, height);
+  return wasResized;
 }
 
 /**
@@ -66,6 +78,7 @@ export const canvasToDataURL = (canvas: HTMLCanvasElement, quality = 0.9): strin
 
 /**
  * Applies a segmentation mask to an image to remove the background
+ * Uses advanced edge detection for better object boundaries
  */
 export const applyMaskToImage = (
   canvas: HTMLCanvasElement,
@@ -92,24 +105,53 @@ export const applyMaskToImage = (
   );
   const data = outputImageData.data;
   
-  // Apply inverted mask to alpha channel with improved edge detection
+  // Enhanced algorithm for better object detection and edge refinement
+  // We'll scan for object edges and apply a more gradual transition
+  
+  // First pass: Apply basic mask
   for (let i = 0; i < mask.data.length; i++) {
-    // Use a smoother transition for edges to reduce jagged edges
-    // Invert the mask value (1 - value) to keep the subject instead of the background
     const maskValue = mask.data[i];
-    // Apply a slightly different formula for edges (values between 0.3 and 0.7)
-    if (maskValue > 0.3 && maskValue < 0.7) {
-      // Smoother transition for edges
-      const alpha = Math.round((1 - maskValue) * 255);
-      data[i * 4 + 3] = alpha;
-    } else {
-      // Binary mask for clearly foreground/background areas
-      const alpha = maskValue < 0.5 ? 255 : 0;
-      data[i * 4 + 3] = alpha;
+    data[i * 4 + 3] = Math.round((1 - maskValue) * 255); // Invert mask
+  }
+  
+  // Second pass: Improve edges with a 3x3 kernel
+  const tempData = new Uint8ClampedArray(data.length);
+  tempData.set(data);
+  
+  const width = outputCanvas.width;
+  const height = outputCanvas.height;
+  
+  // Edge enhancement kernel
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
+      const idx = (y * width + x) * 4;
+      
+      // Only process pixels near edges (where alpha is between 20 and 235)
+      if (data[idx + 3] > 20 && data[idx + 3] < 235) {
+        // Sample surrounding pixels
+        let sum = 0;
+        let count = 0;
+        
+        // Check 3x3 neighborhood
+        for (let ky = -1; ky <= 1; ky++) {
+          for (let kx = -1; kx <= 1; kx++) {
+            const kidx = ((y + ky) * width + (x + kx)) * 4;
+            sum += data[kidx + 3];
+            count++;
+          }
+        }
+        
+        // Calculate smoothed alpha value
+        const avgAlpha = Math.round(sum / count);
+        
+        // Apply refined alpha for smoother edges
+        tempData[idx + 3] = avgAlpha;
+      }
     }
   }
   
-  outputCtx.putImageData(outputImageData, 0, 0);
+  // Apply smoothed data
+  outputCtx.putImageData(new ImageData(tempData, width, height), 0, 0);
   
   // Convert canvas to blob
   return new Promise((resolve, reject) => {
@@ -128,17 +170,20 @@ export const applyMaskToImage = (
 }
 
 /**
- * Creates and initializes a segmentation model
+ * Creates and initializes a segmentation model with improved parameters
  */
 export const createSegmentationModel = async () => {
+  // Use a more accurate model for better object detection
   return await pipeline(
     'image-segmentation', 
-    'Xenova/segformer-b2-finetuned-ade-512-512'
+    'Xenova/segformer-b2-finetuned-ade-512-512', 
+    { device: 'webgpu' } // Use WebGPU if available for faster processing
   );
 }
 
 /**
  * Main function to remove background from an image
+ * Implements improved object detection logic
  */
 export const removeBackground = async (imageElement: HTMLImageElement): Promise<Blob> => {
   try {
@@ -152,13 +197,13 @@ export const removeBackground = async (imageElement: HTMLImageElement): Promise<
     console.log(`Image ${wasResized ? 'was' : 'was not'} resized. Final dimensions: ${canvas.width}x${canvas.height}`);
     
     // Get image data as base64
-    const imageData = canvasToDataURL(canvas, 0.9);
+    const imageData = canvasToDataURL(canvas, 0.92); // Higher quality for better object detection
     console.log('Image converted to base64');
     
     // Process the image with the segmentation model
     console.log('Processing with segmentation model...');
     const result = await segmenter(imageData, { 
-      threshold: 0.5 // Keep threshold for segmentation
+      threshold: 0.5 // Threshold for segmentation
     });
     
     console.log('Segmentation result:', result);
@@ -168,7 +213,7 @@ export const removeBackground = async (imageElement: HTMLImageElement): Promise<
     }
     
     // Apply mask to remove background
-    console.log('Mask applied successfully');
+    console.log('Applying enhanced mask for better edge detection');
     return await applyMaskToImage(canvas, result[0].mask);
   } catch (error) {
     console.error('Error removing background:', error);

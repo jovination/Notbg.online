@@ -1,4 +1,3 @@
-
 import { useState, useRef, DragEvent, ChangeEvent } from "react";
 import { Upload, Image as ImageIcon, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -59,7 +58,6 @@ const ImageUploader = () => {
       setOriginalImage(URL.createObjectURL(file));
       setProcessedImage(null);
       
-      // Simulate progress for better UX
       const progressInterval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 90) {
@@ -70,10 +68,8 @@ const ImageUploader = () => {
         });
       }, 200);
       
-      // Load the image
       const img = await loadImage(file);
       
-      // Process the image to remove background
       const processedBlob = await removeBackground(img);
       const processedURL = URL.createObjectURL(processedBlob);
       
@@ -129,7 +125,7 @@ const ImageUploader = () => {
       >
         <h2 className="text-3xl font-bold mb-4">Remove Background in Seconds</h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Upload your image and our AI will automatically remove the background. It's that simple!
+          Upload your image and our AI will automatically identify objects and remove the background.
         </p>
       </motion.div>
 
@@ -141,7 +137,7 @@ const ImageUploader = () => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            className={`drop-zone rounded-[32px] ${isDragging ? "active" : ""}`}
+            className={`drop-zone rounded-[24px] ${isDragging ? "active" : ""}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -182,19 +178,18 @@ const ImageUploader = () => {
             className="space-y-8"
           >
             <div className="flex flex-col md:flex-row gap-8 justify-center">
-              {/* Original Image */}
               <motion.div
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
                 className="flex-1 max-w-sm w-full"
               >
-                <Card className="h-full rounded-[32px] overflow-hidden shadow-md">
+                <Card className="h-full rounded-[24px] overflow-hidden shadow-md">
                   <CardContent className="p-4 flex flex-col h-full">
                     <div className="text-center mb-4">
                       <h3 className="font-semibold">Original Image</h3>
                     </div>
-                    <div className="image-container flex-grow aspect-square flex items-center justify-center bg-gray-100 rounded-[24px] overflow-hidden">
+                    <div className="image-container flex-grow aspect-square flex items-center justify-center bg-gray-100 rounded-[16px] overflow-hidden">
                       {originalImage && (
                         <motion.img
                           initial={{ scale: 0.9, opacity: 0 }}
@@ -210,19 +205,18 @@ const ImageUploader = () => {
                 </Card>
               </motion.div>
 
-              {/* Processed Image */}
               <motion.div
                 initial={{ x: 20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="flex-1 max-w-sm w-full"
               >
-                <Card className="h-full rounded-[32px] overflow-hidden shadow-md">
+                <Card className="h-full rounded-[24px] overflow-hidden shadow-md">
                   <CardContent className="p-4 flex flex-col h-full">
                     <div className="text-center mb-4">
                       <h3 className="font-semibold">Processed Image</h3>
                     </div>
-                    <div className="image-container flex-grow aspect-square flex items-center justify-center bg-gray-100 bg-[url('/placeholder.svg')] rounded-[24px]">
+                    <div className="image-container flex-grow aspect-square flex items-center justify-center bg-gray-100 bg-[url('/placeholder.svg')] rounded-[16px]">
                       {isProcessing ? (
                         <div className="flex flex-col items-center">
                           <Loader2 className="h-10 w-10 text-blue-500 animate-spin mb-2" />
@@ -289,7 +283,6 @@ const ImageUploader = () => {
         )}
       </AnimatePresence>
       
-      {/* Decorative elements */}
       <motion.div 
         className="absolute left-10 top-1/2 w-16 h-16 text-primary opacity-60 hidden md:block"
         animate={{ 
