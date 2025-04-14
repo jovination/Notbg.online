@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Image as ImageIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
 const CTASection = () => {
@@ -32,10 +32,34 @@ const CTASection = () => {
           </motion.div>
           <p className="text-gray-500 text-sm text-center mt-4 mb-4">or drop image here</p>
           <div className="flex justify-center space-x-2 mt-4">
-            <div className="w-8 h-8 rounded-md bg-gray-200"></div>
-            <div className="w-8 h-8 rounded-md bg-gray-200"></div>
-            <div className="w-8 h-8 rounded-md bg-gray-200"></div>
-            <div className="w-8 h-8 rounded-md bg-gray-200"></div>
+            <div className="w-8 h-8 rounded-md overflow-hidden">
+              <img 
+                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=100&h=100&fit=crop" 
+                alt="Sample 1" 
+                className="w-full h-full object-cover" 
+              />
+            </div>
+            <div className="w-8 h-8 rounded-md overflow-hidden">
+              <img 
+                src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=100&h=100&fit=crop" 
+                alt="Sample 2" 
+                className="w-full h-full object-cover" 
+              />
+            </div>
+            <div className="w-8 h-8 rounded-md overflow-hidden">
+              <img 
+                src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=100&h=100&fit=crop" 
+                alt="Sample 3" 
+                className="w-full h-full object-cover" 
+              />
+            </div>
+            <div className="w-8 h-8 rounded-md overflow-hidden">
+              <img 
+                src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=100&h=100&fit=crop" 
+                alt="Sample 4" 
+                className="w-full h-full object-cover" 
+              />
+            </div>
           </div>
         </div>
         

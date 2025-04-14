@@ -6,26 +6,26 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const examples = [
   {
-    before: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
-    after: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158", // Same image as before (we'll explain in the UI)
+    before: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&fit=crop",
+    after: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&fit=crop", // Same image as before (we'll explain in the UI)
     alt: "Woman with laptop",
     description: "Portrait photos"
   },
   {
-    before: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
-    after: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7", // Same image as before (we'll explain in the UI)
+    before: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&fit=crop",
+    after: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&fit=crop", // Same image as before (we'll explain in the UI)
     alt: "Woman on bed",
     description: "Product photos"
   },
   {
-    before: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-    after: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b", // Same image as before (we'll explain in the UI)
+    before: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&fit=crop",
+    after: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&fit=crop", // Same image as before (we'll explain in the UI)
     alt: "Laptop computer",
     description: "E-commerce"
   },
   {
-    before: "https://images.unsplash.com/photo-1531297484001-80022131f5a1",
-    after: "https://images.unsplash.com/photo-1531297484001-80022131f5a1", // Same image as before (we'll explain in the UI)
+    before: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&fit=crop",
+    after: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&fit=crop", // Same image as before (we'll explain in the UI)
     alt: "Laptop on surface",
     description: "Design"
   },
