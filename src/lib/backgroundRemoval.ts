@@ -1,4 +1,3 @@
-
 import { pipeline, env } from '@huggingface/transformers';
 
 // Configure transformers.js to download models
@@ -7,11 +6,14 @@ env.useBrowserCache = false;
 
 const MAX_IMAGE_DIMENSION = 1024;
 
-function resizeImageIfNeeded(
+/**
+ * Resizes an image if it exceeds maximum dimensions
+ */
+export const resizeImage = (
   canvas: HTMLCanvasElement, 
   ctx: CanvasRenderingContext2D, 
   image: HTMLImageElement
-) {
+): boolean => {
   let width = image.naturalWidth;
   let height = image.naturalHeight;
 
@@ -36,34 +38,127 @@ function resizeImageIfNeeded(
   return false;
 }
 
+/**
+ * Creates a canvas from an image element
+ */
+export const createCanvasFromImage = (image: HTMLImageElement): {
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+  wasResized: boolean;
+} => {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  
+  if (!ctx) {
+    throw new Error('Could not get canvas context');
+  }
+  
+  const wasResized = resizeImage(canvas, ctx, image);
+  return { canvas, ctx, wasResized };
+}
+
+/**
+ * Converts canvas to base64 data URL
+ */
+export const canvasToDataURL = (canvas: HTMLCanvasElement, quality = 0.9): string => {
+  return canvas.toDataURL('image/jpeg', quality);
+}
+
+/**
+ * Applies a segmentation mask to an image to remove the background
+ */
+export const applyMaskToImage = (
+  canvas: HTMLCanvasElement,
+  mask: { data: number[] }
+): Promise<Blob> => {
+  // Create a new canvas for the masked image
+  const outputCanvas = document.createElement('canvas');
+  outputCanvas.width = canvas.width;
+  outputCanvas.height = canvas.height;
+  const outputCtx = outputCanvas.getContext('2d');
+  
+  if (!outputCtx) {
+    throw new Error('Could not get output canvas context');
+  }
+  
+  // Draw original image
+  outputCtx.drawImage(canvas, 0, 0);
+  
+  // Apply the mask
+  const outputImageData = outputCtx.getImageData(
+    0, 0,
+    outputCanvas.width,
+    outputCanvas.height
+  );
+  const data = outputImageData.data;
+  
+  // Apply inverted mask to alpha channel with improved edge detection
+  for (let i = 0; i < mask.data.length; i++) {
+    // Use a smoother transition for edges to reduce jagged edges
+    // Invert the mask value (1 - value) to keep the subject instead of the background
+    const maskValue = mask.data[i];
+    // Apply a slightly different formula for edges (values between 0.3 and 0.7)
+    if (maskValue > 0.3 && maskValue < 0.7) {
+      // Smoother transition for edges
+      const alpha = Math.round((1 - maskValue) * 255);
+      data[i * 4 + 3] = alpha;
+    } else {
+      // Binary mask for clearly foreground/background areas
+      const alpha = maskValue < 0.5 ? 255 : 0;
+      data[i * 4 + 3] = alpha;
+    }
+  }
+  
+  outputCtx.putImageData(outputImageData, 0, 0);
+  
+  // Convert canvas to blob
+  return new Promise((resolve, reject) => {
+    outputCanvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error('Failed to create blob'));
+        }
+      },
+      'image/png',
+      1.0
+    );
+  });
+}
+
+/**
+ * Creates and initializes a segmentation model
+ */
+export const createSegmentationModel = async () => {
+  return await pipeline(
+    'image-segmentation', 
+    'Xenova/segformer-b2-finetuned-ade-512-512'
+  );
+}
+
+/**
+ * Main function to remove background from an image
+ */
 export const removeBackground = async (imageElement: HTMLImageElement): Promise<Blob> => {
   try {
     console.log('Starting background removal process...');
     
-    // Remove topk and adjust threshold options
-    const segmenter = await pipeline(
-      'image-segmentation', 
-      'Xenova/segformer-b2-finetuned-ade-512-512'
-    );
+    // Initialize segmentation model
+    const segmenter = await createSegmentationModel();
     
-    // Convert HTMLImageElement to canvas
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    if (!ctx) throw new Error('Could not get canvas context');
-    
-    // Resize image if needed and draw it to canvas
-    const wasResized = resizeImageIfNeeded(canvas, ctx, imageElement);
+    // Create canvas from image
+    const { canvas, wasResized } = createCanvasFromImage(imageElement);
     console.log(`Image ${wasResized ? 'was' : 'was not'} resized. Final dimensions: ${canvas.width}x${canvas.height}`);
     
     // Get image data as base64
-    const imageData = canvas.toDataURL('image/jpeg', 0.9); // Increased quality
+    const imageData = canvasToDataURL(canvas, 0.9);
     console.log('Image converted to base64');
     
     // Process the image with the segmentation model
     console.log('Processing with segmentation model...');
     const result = await segmenter(imageData, { 
-      threshold: 0.5 // Removed topk, keep threshold for segmentation
+      threshold: 0.5 // Keep threshold for segmentation
     });
     
     console.log('Segmentation result:', result);
@@ -72,60 +167,9 @@ export const removeBackground = async (imageElement: HTMLImageElement): Promise<
       throw new Error('Invalid segmentation result');
     }
     
-    // Create a new canvas for the masked image
-    const outputCanvas = document.createElement('canvas');
-    outputCanvas.width = canvas.width;
-    outputCanvas.height = canvas.height;
-    const outputCtx = outputCanvas.getContext('2d');
-    
-    if (!outputCtx) throw new Error('Could not get output canvas context');
-    
-    // Draw original image
-    outputCtx.drawImage(canvas, 0, 0);
-    
-    // Apply the mask
-    const outputImageData = outputCtx.getImageData(
-      0, 0,
-      outputCanvas.width,
-      outputCanvas.height
-    );
-    const data = outputImageData.data;
-    
-    // Apply inverted mask to alpha channel with improved edge detection
-    for (let i = 0; i < result[0].mask.data.length; i++) {
-      // Use a smoother transition for edges to reduce jagged edges
-      // Invert the mask value (1 - value) to keep the subject instead of the background
-      const maskValue = result[0].mask.data[i];
-      // Apply a slightly different formula for edges (values between 0.3 and 0.7)
-      if (maskValue > 0.3 && maskValue < 0.7) {
-        // Smoother transition for edges
-        const alpha = Math.round((1 - maskValue) * 255);
-        data[i * 4 + 3] = alpha;
-      } else {
-        // Binary mask for clearly foreground/background areas
-        const alpha = maskValue < 0.5 ? 255 : 0;
-        data[i * 4 + 3] = alpha;
-      }
-    }
-    
-    outputCtx.putImageData(outputImageData, 0, 0);
+    // Apply mask to remove background
     console.log('Mask applied successfully');
-    
-    // Convert canvas to blob
-    return new Promise((resolve, reject) => {
-      outputCanvas.toBlob(
-        (blob) => {
-          if (blob) {
-            console.log('Successfully created final blob');
-            resolve(blob);
-          } else {
-            reject(new Error('Failed to create blob'));
-          }
-        },
-        'image/png',
-        1.0
-      );
-    });
+    return await applyMaskToImage(canvas, result[0].mask);
   } catch (error) {
     console.error('Error removing background:', error);
     throw error;
