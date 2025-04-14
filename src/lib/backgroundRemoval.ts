@@ -1,137 +1,11 @@
-import { pipeline, env } from '@huggingface/transformers';
 
-// Configure transformers.js to download models
-env.allowLocalModels = false;
-env.useBrowserCache = false;
+import { HfInference } from '@huggingface/transformers';
 
-const MAX_IMAGE_DIMENSION = 1024;
+const hf = new HfInference();
 
-function resizeImageIfNeeded(
-  canvas: HTMLCanvasElement, 
-  ctx: CanvasRenderingContext2D, 
-  image: HTMLImageElement
-) {
-  let width = image.naturalWidth;
-  let height = image.naturalHeight;
-
-  if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
-    if (width > height) {
-      height = Math.round((height * MAX_IMAGE_DIMENSION) / width);
-      width = MAX_IMAGE_DIMENSION;
-    } else {
-      width = Math.round((width * MAX_IMAGE_DIMENSION) / height);
-      height = MAX_IMAGE_DIMENSION;
-    }
-
-    canvas.width = width;
-    canvas.height = height;
-    ctx.drawImage(image, 0, 0, width, height);
-    return true;
-  }
-
-  canvas.width = width;
-  canvas.height = height;
-  ctx.drawImage(image, 0, 0);
-  return false;
-}
-
-export const removeBackground = async (imageElement: HTMLImageElement): Promise<Blob> => {
-  try {
-    console.log('Starting background removal process...');
-    
-    // Try to use a more accurate model for better results
-    const segmenter = await pipeline(
-      'image-segmentation', 
-      'Xenova/segformer-b2-finetuned-ade-512-512'
-    );
-    
-    // Convert HTMLImageElement to canvas
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    if (!ctx) throw new Error('Could not get canvas context');
-    
-    // Resize image if needed and draw it to canvas
-    const wasResized = resizeImageIfNeeded(canvas, ctx, imageElement);
-    console.log(`Image ${wasResized ? 'was' : 'was not'} resized. Final dimensions: ${canvas.width}x${canvas.height}`);
-    
-    // Get image data as base64
-    const imageData = canvas.toDataURL('image/jpeg', 0.9); // Increased quality
-    console.log('Image converted to base64');
-    
-    // Process the image with the segmentation model
-    console.log('Processing with segmentation model...');
-    const result = await segmenter(imageData, { 
-      threshold: 0.5, // Adjust threshold for better segmentation
-      topk: 1 // Focus on the main subject
-    });
-    
-    console.log('Segmentation result:', result);
-    
-    if (!result || !Array.isArray(result) || result.length === 0 || !result[0].mask) {
-      throw new Error('Invalid segmentation result');
-    }
-    
-    // Create a new canvas for the masked image
-    const outputCanvas = document.createElement('canvas');
-    outputCanvas.width = canvas.width;
-    outputCanvas.height = canvas.height;
-    const outputCtx = outputCanvas.getContext('2d');
-    
-    if (!outputCtx) throw new Error('Could not get output canvas context');
-    
-    // Draw original image
-    outputCtx.drawImage(canvas, 0, 0);
-    
-    // Apply the mask
-    const outputImageData = outputCtx.getImageData(
-      0, 0,
-      outputCanvas.width,
-      outputCanvas.height
-    );
-    const data = outputImageData.data;
-    
-    // Apply inverted mask to alpha channel with improved edge detection
-    for (let i = 0; i < result[0].mask.data.length; i++) {
-      // Use a smoother transition for edges to reduce jagged edges
-      // Invert the mask value (1 - value) to keep the subject instead of the background
-      const maskValue = result[0].mask.data[i];
-      // Apply a slightly different formula for edges (values between 0.3 and 0.7)
-      if (maskValue > 0.3 && maskValue < 0.7) {
-        // Smoother transition for edges
-        const alpha = Math.round((1 - maskValue) * 255);
-        data[i * 4 + 3] = alpha;
-      } else {
-        // Binary mask for clearly foreground/background areas
-        const alpha = maskValue < 0.5 ? 255 : 0;
-        data[i * 4 + 3] = alpha;
-      }
-    }
-    
-    outputCtx.putImageData(outputImageData, 0, 0);
-    console.log('Mask applied successfully');
-    
-    // Convert canvas to blob
-    return new Promise((resolve, reject) => {
-      outputCanvas.toBlob(
-        (blob) => {
-          if (blob) {
-            console.log('Successfully created final blob');
-            resolve(blob);
-          } else {
-            reject(new Error('Failed to create blob'));
-          }
-        },
-        'image/png',
-        1.0
-      );
-    });
-  } catch (error) {
-    console.error('Error removing background:', error);
-    throw error;
-  }
-};
-
+/**
+ * Loads an image file into an HTMLImageElement
+ */
 export const loadImage = (file: File): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -139,4 +13,136 @@ export const loadImage = (file: File): Promise<HTMLImageElement> => {
     img.onerror = reject;
     img.src = URL.createObjectURL(file);
   });
+};
+
+/**
+ * Removes the background from an image and returns a new image as a Blob
+ */
+export const removeBackground = async (
+  img: HTMLImageElement
+): Promise<Blob> => {
+  try {
+    // Create a canvas to draw the image
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (!ctx) {
+      throw new Error('Could not get canvas context');
+    }
+    
+    // Set canvas dimensions to match image
+    canvas.width = img.width;
+    canvas.height = img.height;
+    
+    // Draw the original image on canvas
+    ctx.drawImage(img, 0, 0);
+    
+    // Get image data
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
+    // Create a Blob from the original image for the ML model
+    const imageBlob = await new Promise<Blob>((resolve) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else resolve(new Blob());
+      }, 'image/png');
+    });
+    
+    console.log('Running segmentation model on image...');
+    
+    // Use Hugging Face Transformers.js to perform image segmentation
+    // We're using a segmentation model to identify the foreground (person/object)
+    const segmentation = await hf.imageSegmentation({
+      data: imageBlob,
+      model: 'facebook/detr-resnet-50-panoptic',
+      // We're removing the unsupported 'topk' property
+    });
+    
+    console.log('Segmentation result:', segmentation);
+    
+    // Create a mask based on the segmentation result
+    const maskCanvas = document.createElement('canvas');
+    maskCanvas.width = canvas.width;
+    maskCanvas.height = canvas.height;
+    const maskCtx = maskCanvas.getContext('2d');
+    
+    if (!maskCtx) {
+      throw new Error('Could not get mask canvas context');
+    }
+    
+    // If we have segments from the model
+    if (Array.isArray(segmentation) && segmentation.length > 0) {
+      // Find segments that are likely to be foreground objects
+      // Classes like 'person', 'animal', 'object', etc.
+      const foregroundClasses = ['person', 'dog', 'cat', 'bird', 'car', 'bicycle', 'motorcycle', 'airplane', 'potted plant', 'flower'];
+      
+      // Fill the mask with black (transparent)
+      maskCtx.fillStyle = 'black';
+      maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+      
+      // For each segment that matches our foreground classes
+      segmentation.forEach(segment => {
+        if (foregroundClasses.some(cls => segment.label.toLowerCase().includes(cls))) {
+          // Draw this segment as white in our mask
+          maskCtx.fillStyle = 'white';
+          const mask = new Image();
+          mask.src = segment.mask;
+          maskCtx.drawImage(mask, 0, 0, maskCanvas.width, maskCanvas.height);
+        }
+      });
+    } else {
+      // Fallback: If segmentation didn't work, use a simple algorithm
+      // This is a very basic approach - in a real app you'd want something more sophisticated
+      console.log('Segmentation failed or returned no segments, using fallback algorithm');
+      
+      // Create a simple contrast-based mask
+      const data = imageData.data;
+      const maskData = maskCtx.createImageData(canvas.width, canvas.height);
+      
+      // Simple background removal based on contrast differences
+      for (let i = 0; i < data.length; i += 4) {
+        // Calculate contrast value
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        
+        // Simple edge detection (this is very basic)
+        const isEdge = 
+          i > 4 * canvas.width && 
+          (Math.abs(r - data[i - 4]) > 30 || 
+           Math.abs(g - data[i - 4 + 1]) > 30 || 
+           Math.abs(b - data[i - 4 + 2]) > 30);
+        
+        // Set mask values - white for foreground, black for background
+        if (isEdge) {
+          maskData.data[i] = 255;
+          maskData.data[i + 1] = 255;
+          maskData.data[i + 2] = 255;
+          maskData.data[i + 3] = 255;
+        } else {
+          maskData.data[i] = 0;
+          maskData.data[i + 1] = 0;
+          maskData.data[i + 2] = 0;
+          maskData.data[i + 3] = 255;
+        }
+      }
+      
+      maskCtx.putImageData(maskData, 0, 0);
+    }
+    
+    // Apply the mask to the original image
+    ctx.globalCompositeOperation = 'destination-in';
+    ctx.drawImage(maskCanvas, 0, 0);
+    
+    // Convert the canvas with transparent background to a Blob
+    return new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error('Failed to create blob from canvas'));
+      }, 'image/png');
+    });
+  } catch (error) {
+    console.error('Error removing background:', error);
+    throw new Error('Failed to remove background: ' + (error instanceof Error ? error.message : String(error)));
+  }
 };

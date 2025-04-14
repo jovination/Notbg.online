@@ -14,16 +14,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 45 100% 51%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 217 91.2% 59.8%;  /* Blue color */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 47 100% 50%;  /* Yellow color */
+    --secondary-foreground: 0 0% 0%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 45 100% 96%;
+    --accent: 47 100% 96%;  /* Light yellow */
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -31,9 +31,9 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 45 100% 51%;
+    --ring: 217 91.2% 59.8%;  /* Blue color */
 
-    --radius: 2rem;
+    --radius: 1rem;
   }
 
   .dark {
@@ -46,16 +46,16 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 45 100% 51%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 217 91.2% 59.8%;  /* Blue color */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 47 100% 50%;  /* Yellow color */
+    --secondary-foreground: 0 0% 0%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 45 100% 55%;
+    --accent: 47 100% 55%;  /* Yellow color */
     --accent-foreground: 0 0% 0%;
 
     --destructive: 0 62.8% 30.6%;
@@ -63,7 +63,7 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 45 100% 51%;
+    --ring: 217 91.2% 59.8%;  /* Blue color */
   }
 }
 
@@ -79,7 +79,7 @@
 }
 
 .drop-zone {
-  @apply border-2 border-dashed rounded-[32px] p-8 transition-all;
+  @apply border-2 border-dashed rounded-3xl p-8 transition-all;
 }
 
 .drop-zone.active {
@@ -87,15 +87,15 @@
 }
 
 .yellow-gradient-bg {
-  @apply bg-gradient-to-b from-white to-amber-100;
+  @apply bg-gradient-to-b from-white to-yellow-100;
 }
 
 .yellow-section {
-  @apply bg-primary/90 text-primary-foreground;
+  @apply bg-secondary/90 text-secondary-foreground;
 }
 
 .image-container {
-  @apply relative overflow-hidden rounded-[24px] shadow-lg;
+  @apply relative overflow-hidden rounded-3xl shadow-lg;
 }
 
 .loader {
@@ -103,20 +103,20 @@
 }
 
 .benefit-card {
-  @apply bg-white p-6 rounded-[32px] shadow-md flex flex-col items-center text-center transition-transform hover:scale-105;
+  @apply bg-white p-6 rounded-3xl shadow-md flex flex-col items-center text-center transition-transform hover:scale-105;
 }
 
 .testimonial-card {
-  @apply bg-white p-6 rounded-[32px] shadow-md flex flex-col gap-4;
+  @apply bg-white p-6 rounded-3xl shadow-md flex flex-col gap-4;
 }
 
 .squiggle {
-  @apply absolute text-primary opacity-80;
+  @apply absolute text-secondary opacity-80;
 }
 
 /* Decorative elements */
 .yellow-squiggle {
-  @apply absolute text-primary opacity-70;
+  @apply absolute text-secondary opacity-70;
 }
 
 @keyframes float {
