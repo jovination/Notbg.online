@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
@@ -16,7 +15,13 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-              <div  className="bg-gray-500 rounded-[32px] shadow-lg max-w-[420px] w-[360px] md:w-full h-[280px] flex items-center justify-center"></div>
+              <div className="bg-gray-500 rounded-[32px] shadow-lg max-w-[420px] w-[360px] md:w-full h-[280px] flex items-center justify-center overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1540331547168-8b63109225b7?q=80&w=2165&auto=format&fit=crop" 
+                  alt="Sample background removal"
+                  className="w-full h-full object-cover"
+                />
+              </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6">
               Remove Image
               <span className="block text-primary">Background</span>
