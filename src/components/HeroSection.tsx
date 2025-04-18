@@ -6,30 +6,30 @@ import { motion } from "framer-motion";
 const HeroSection = () => {
   return (
     <section className="relative overflow-hidden py-20 bg-white h-screen flex items-center justify-center">
-      <div className="max-w-7xl  w-full mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl  w-full mx-auto px-4 sm:px-6 lg:px-8 -mt-20">
         <div className="flex flex-col lg:flex-row items-center">
+        
           {/* Text Content */}
           <motion.div 
-            className="lg:w-1/2 text-center lg:text-left mb-10 lg:mb-0"
+            className="lg:w-1/2 space-y-4 text-center lg:text-left mb-10 lg:mb-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-6">
+              <div  className="bg-gray-500 rounded-[32px] shadow-lg max-w-[420px] w-[360px] md:w-full h-[280px] flex items-center justify-center"></div>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6">
               Remove Image
               <span className="block text-primary">Background</span>
             </h1>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl lg:max-w-none mx-auto lg:mx-0">
-              Get rid of backgrounds 100% automatically in 5 seconds with one click
+            <p className="text-xl font-medium text-gray-600 mb-8 max-w-2xl lg:max-w-none mx-auto lg:mx-0">
+              No backgrounds 100% automatically in 5 seconds.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button size="lg" className="gap-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full w-full sm:w-auto">
-                  Start Now <ArrowRight className="h-4 w-4" />
-                </Button>
+               
               </motion.div>
             </div>
           </motion.div>
@@ -55,18 +55,18 @@ const HeroSection = () => {
               </motion.div>
               
               <motion.div 
-                className="absolute -bottom-10 -right-10 w-16 h-16 text-primary"
+                className="absolute -bottom-10 -right-10 w-32 h-32 text-primary"
                 initial={{ rotate: 0 }}
                 animate={{ rotate: -360 }}
                 transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
               >
-                <svg viewBox="0 0 100 100" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth="3">
+                <svg viewBox="0 0 100 100" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M30,20 Q50,40 70,20 Q90,0 70,40" />
                 </svg>
               </motion.div>
               
- <div className="relative mt-10 max-w-[432px] w-[360px] md:w-full h-[346px] bg-white rounded-[32px] shadow-xl p-6 mx-auto flex flex-col items-center justify-center">
-  <div className="bg-blue-500 text-xl font-semibold text-white rounded-full py-3 px-5 text-center mb-4">
+              <div className="relative mt-10 max-w-[432px] w-[360px] md:w-full h-[346px] bg-white rounded-[32px] shadow-[0_0_20px_rgba(0,0,0,0.1)] p-6 mx-auto flex flex-col items-center justify-center">
+              <div className="bg-blue-500 text-xl font-semibold text-white rounded-full py-3 px-5 text-center mb-4">
     <span>Upload Image</span>
   </div>
   <p className="text-gray-500 text-base font-semibold text-center mb-4">or drop image here</p>
