@@ -16,23 +16,11 @@ const HeroSection = () => {
             transition={{ duration: 0.6 }}
           >
             {/* Sample Images Grid */}
-            <div className="grid grid-cols-2 gap-4 mb-8 max-w-[420px] mx-auto lg:mx-0">
+            <div className="grid grid-cols-1 gap-4 mb-8 max-w-[420px] mx-auto lg:mx-0">
               {[
-                {
-                  id: "photo-1581091226825-a6a2a5aee158",
-                  alt: "Woman with laptop"
-                },
                 {
                   id: "photo-1649972904349-6e44c42644a7",
                   alt: "Woman on bed"
-                },
-                {
-                  id: "photo-1488590528505-98d2b5aba04b",
-                  alt: "Laptop computer"
-                },
-                {
-                  id: "photo-1531297484001-80022131f5a1",
-                  alt: "Tech setup"
                 }
               ].map((img, i) => (
                 <motion.div
@@ -65,62 +53,6 @@ const HeroSection = () => {
               >
                 <Button variant="primary">Remove Background</Button>
               </motion.div>
-            </div>
-          </motion.div>
-          
-          {/* Image Section */}
-          <motion.div 
-            className="lg:w-1/2"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div className="relative">
-              {/* Yellow decorative elements */}
-              <motion.div 
-                className="absolute -top-10 -left-10 w-20 h-20 text-primary"
-                initial={{ rotate: 0 }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              >
-                <svg viewBox="0 0 100 100" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth="3">
-                  <path d="M10,50 Q30,10 50,50 Q70,90 90,50" />
-                </svg>
-              </motion.div>
-              
-              <motion.div 
-                className="absolute -bottom-10 -right-10 w-32 h-32 text-primary"
-                initial={{ rotate: 0 }}
-                animate={{ rotate: -360 }}
-                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-              >
-                <svg viewBox="0 0 100 100" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M30,20 Q50,40 70,20 Q90,0 70,40" />
-                </svg>
-              </motion.div>
-              
-              <div className="relative mt-10 max-w-[432px] w-[360px] md:w-full h-[346px] bg-white rounded-[32px] shadow-[0_0_20px_rgba(0,0,0,0.1)] p-6 mx-auto flex flex-col items-center justify-center">
-                <div className="bg-blue-500 text-xl font-semibold text-white rounded-full py-3 px-5 text-center mb-4">
-                  <span>Upload Image</span>
-                </div>
-                <p className="text-gray-500 text-base font-semibold text-center mb-4">or drop image here</p>
-                <div className="flex justify-center space-x-2 mt-4">
-                  {[
-                    "photo-1581091226825-a6a2a5aee158",
-                    "photo-1649972904349-6e44c42644a7",
-                    "photo-1488590528505-98d2b5aba04b",
-                    "photo-1531297484001-80022131f5a1",
-                  ].map((id, i) => (
-                    <div key={i} className="w-8 h-8 rounded-md overflow-hidden">
-                      <img
-                        src={`https://images.unsplash.com/${id}?w=100&h=100&fit=crop`}
-                        alt={`Sample ${i + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
           </motion.div>
         </div>
